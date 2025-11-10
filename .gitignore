@@ -219,3 +219,5 @@ logs/
 *.db
 *.sqlite
 *.sqlite3
+
+*.py[oc]
