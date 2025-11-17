@@ -1,22 +1,27 @@
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph import MessagesState
 from langchain_core.messages import AIMessage
+from langchain.chat_models import init_chat_model
+import random
+
+llm = init_chat_model("openai:gpt-4o", temperature=1)
 
 class State(MessagesState):
     customer_name: str
     my_age: int
 
 def node_1(state: State):
-    history = state["messages"]
+    new_state: State = {}
     if state.get("customer_name") is None:
-        return {
-            "customer_name": "Alice"
-        }
+        new_state["customer_name"] = "Alice"
     else:
-        ai_message = AIMessage(content="Hello, how can I assist you today?")
-        return {
-            "messages": [ai_message]
-        }
+        new_state["my_age"] = random.randint(20, 50)
+
+    history = state["messages"]
+    ai_message = llm.invoke(history)
+    new_state["messages"] = [ai_message]
+    print(new_state)
+    return new_state
 
 builder = StateGraph(State)
 builder.add_node("node_1", node_1)
