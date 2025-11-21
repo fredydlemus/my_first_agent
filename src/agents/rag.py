@@ -15,7 +15,10 @@ class State(MessagesState):
     customer_name: str
     my_age: int
 
-def node_1(state: State):
+def extractor(state: State):
+    return {}
+
+def conversation(state: State):
     new_state: State = {}
     if state.get("customer_name") is None:
         new_state["customer_name"] = "Alice"
@@ -30,9 +33,11 @@ def node_1(state: State):
     return new_state
 
 builder = StateGraph(State)
-builder.add_node("node_1", node_1)
+builder.add_node("conversation", conversation)
+builder.add_node("extractor", extractor)
 
-builder.add_edge(START, "node_1")
-builder.add_edge("node_1", END)
+builder.add_edge(START, "extractor")
+builder.add_edge("extractor", "conversation")
+builder.add_edge("conversation", END)
 
 agent = builder.compile()
